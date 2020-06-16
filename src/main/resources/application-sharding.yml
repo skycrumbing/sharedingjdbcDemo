@@ -1,0 +1,30 @@
+#配置数据源
+spring:
+  #配置 Jpa
+#  jpa:
+#    hibernate:
+      # 生产环境设置成 none，避免程序运行时自动更新数据库结构
+#      ddl-auto: none
+
+  shardingsphere:
+    datasource:
+      names: db0 # 数据源名称
+      db0:
+        type: com.zaxxer.hikari.HikariDataSource
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        jdbc-url: jdbc:mysql://localhost:3306/shardingjdbc?serverTimezone=Asia/Shanghai&characterEncoding=utf8&useSSL=false
+        username: root
+        password: admin
+    sharding:
+      tables:
+        shardingjdbc: # 表名
+          actual-data-nodes: db0.shardingjdbc_$->{2019..2020}0$->{1..9}, db0.shardingjdbc_$->{2019..2020}$->{10..12}, db0.shardingjdbc
+          table-strategy:
+            standard:
+              sharding-column: create_date # 分片键
+              precise-algorithm-class-name: com.sharedingjdbc.demo.config.PreciseTableShardingAlgorithm   # 实现类的完全限定类名
+              range-algorithm-class-name: com.sharedingjdbc.demo.config.RangeTableShardingAlgorithm
+
+    props:
+      sql:
+        show: true
